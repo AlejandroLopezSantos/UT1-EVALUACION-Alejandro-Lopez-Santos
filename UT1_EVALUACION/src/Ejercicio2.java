@@ -7,57 +7,56 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Ejercicio2 {
 
     public static void main(String[] args) {
 
-        // Creación de tres hilos, cada uno representando un jugador lanzando el dado
-        Thread jugador1 = new Thread(new SimulacionDado("Jugador 1"));
-        Thread jugador2 = new Thread(new SimulacionDado("Jugador 2"));
-        Thread jugador3 = new Thread(new SimulacionDado("Jugador 3"));
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(3);
 
-        // Iniciar los hilos
-        jugador1.start();
-        jugador2.start();
-        jugador3.start();
+        SimulacionDado jugador1 = new SimulacionDado("Jugador 1");
+        SimulacionDado jugador2 = new SimulacionDado("Jugador 2");
+        SimulacionDado jugador3 = new SimulacionDado("Jugador 3");
+
+        executorService.scheduleAtFixedRate(jugador1, 0, 1, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(jugador2, 0, 1, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(jugador3, 0, 1, TimeUnit.SECONDS);
+
+        executorService.schedule(() -> {
+            executorService.shutdown();
+        }, 5, TimeUnit.SECONDS);
     }
 
     static class SimulacionDado implements Runnable {
         private String nombreJugador;
         private List<Integer> lanzamientos;
         private Random random;
+        private int lanzamientosRestantes;
 
         public SimulacionDado(String nombreJugador) {
             this.nombreJugador = nombreJugador;
             this.lanzamientos = new ArrayList<>();
             this.random = new Random();
+            this.lanzamientosRestantes = 5; // Limitar a 5 lanzamientos
         }
 
         @Override
         public void run() {
-            int totalAcumulado = 0;
-
-            for (int i = 1; i <= 5; i++) {
-                // Generar un número aleatorio entre 1 y 6
+            if (lanzamientosRestantes > 0) {
                 int lanzamiento = random.nextInt(6) + 1;
                 lanzamientos.add(lanzamiento);
-                totalAcumulado += lanzamiento;
-
-                // Imprimir el resultado del lanzamiento
                 System.out.println(nombreJugador + " lanzó un " + lanzamiento);
+                lanzamientosRestantes--;
 
-                try {
-                    // Pausar el hilo por 1 segundo
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    System.err.println("Hilo interrumpido: " + nombreJugador);
+                if (lanzamientosRestantes == 0) {
+                    int totalAcumulado = lanzamientos.stream().mapToInt(Integer::intValue).sum();
+                    System.out.println(nombreJugador + " acumuló un total de: " + totalAcumulado);
                 }
             }
-
-            // Imprimir el total acumulado después de 5 lanzamientos
-            System.out.println(nombreJugador + " acumuló un total de: " + totalAcumulado);
         }
     }
-
 }
+
