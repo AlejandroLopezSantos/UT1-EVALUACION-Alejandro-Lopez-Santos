@@ -9,10 +9,12 @@ public class Ejercicio1 extends Thread {
 
     public static void main(String[] args) {
 
+        // Creamos los tres hilos
         Thread HiloA = new Thread(new NombreHilo("Hilo A"));
         Thread HiloB = new Thread(new NombreHilo("Hilo B"));
         Thread HiloC = new Thread(new NombreHilo("Hilo C"));
 
+        // Hacemos que los hilos empiecen a ejecutarse
         HiloA.start();
         HiloB.start();
         HiloC.start();
@@ -28,6 +30,7 @@ public class Ejercicio1 extends Thread {
 
         @Override
         public void run() {
+            // Hacemos un bucle en el que se mostrará el nombre del hilo 5 veces
             for (int i = 1; i <= 5; i++) {
                 System.out.println("Nombre del hilo: " + nombre);
             }

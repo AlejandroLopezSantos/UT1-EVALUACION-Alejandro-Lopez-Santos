@@ -15,12 +15,14 @@ public class Ejercicio2 {
 
     public static void main(String[] args) {
 
+        // Utilizamos ScheduledExecutorService para crear tres hilos directamente
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(3);
 
         SimulacionDado jugador1 = new SimulacionDado("Jugador 1");
         SimulacionDado jugador2 = new SimulacionDado("Jugador 2");
         SimulacionDado jugador3 = new SimulacionDado("Jugador 3");
 
+        // Ponemos los datos de los tres jugadores, teniendo en cuenta su delay
         executorService.scheduleAtFixedRate(jugador1, 0, 1, TimeUnit.SECONDS);
         executorService.scheduleAtFixedRate(jugador2, 0, 1, TimeUnit.SECONDS);
         executorService.scheduleAtFixedRate(jugador3, 0, 1, TimeUnit.SECONDS);
@@ -46,12 +48,15 @@ public class Ejercicio2 {
         @Override
         public void run() {
             if (lanzamientosRestantes > 0) {
+                // Si aún quedan lanzamientos  se añade un número entre 1 y 6 al arraylist de lanzamientos
+                // y se pasa por pantalla el número que haya salido
                 int lanzamiento = random.nextInt(6) + 1;
                 lanzamientos.add(lanzamiento);
                 System.out.println(nombreJugador + " lanzó un " + lanzamiento);
                 lanzamientosRestantes--;
 
                 if (lanzamientosRestantes == 0) {
+                    // Si no quedan más lanzamientos se muestran por pantalla los puntos totales obtenidos por los jugadores
                     int totalAcumulado = lanzamientos.stream().mapToInt(Integer::intValue).sum();
                     System.out.println(nombreJugador + " acumuló un total de: " + totalAcumulado);
                 }
